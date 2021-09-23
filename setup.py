@@ -4,6 +4,7 @@ from setuptools import setup
 from setuptools import Extension
 
 
+# ABI 3 compatibility for the wheel
 if sys.version_info >= (3,) and platform.python_implementation() == 'CPython':
     try:
         import wheel.bdist_wheel
@@ -25,6 +26,8 @@ setup(
         Extension(
             'hello_world_go',
             ['hello_world_go.go'],
+
+            # ABI 3 compatibility for the extension
             py_limited_api=True,
             define_macros=[('Py_LIMITED_API', None)],
         ),
