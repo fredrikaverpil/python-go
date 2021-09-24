@@ -56,4 +56,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: wheels
-        path: package/dist
+        path: dist
