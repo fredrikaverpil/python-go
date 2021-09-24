@@ -22,7 +22,6 @@ if sys.version_info >= (3,) and platform.python_implementation() == 'CPython':
 setup(
     name='hello-world-go',
     setup_requires=['setuptools', 'wheel', 'setuptools-golang'],
-    build_requires=['setuptools', 'wheel', 'setuptools-golang'],
     ext_modules=[
         Extension(
             'hello_world_go',
