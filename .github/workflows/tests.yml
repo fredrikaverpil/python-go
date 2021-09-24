@@ -12,10 +12,17 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.9]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         include:
           - os: ubuntu-latest
             activate_cmd: source .venv/bin/activate
+            sudo: required
+            services:
+              - docker
+          - os: macOS-latest
+            activate_cmd: source .venv/bin/activate
+          - os: windows-latest
+            activate_cmd: .venv\Scripts\activate.ps1
 
     steps:
 
@@ -37,9 +44,16 @@ jobs:
     - name: Build and install
       run: |
         ${{ matrix.activate_cmd }}
+        python setup.py bdist_wheel
         pip install . --verbose
 
     - name: Tests
       run: |
         ${{ matrix.activate_cmd }}
         pytest -v tests.py
+
+    - name: Store wheel
+      uses: actions/upload-artifact@v1
+      with:
+        name: wheels
+        path: package/dist
