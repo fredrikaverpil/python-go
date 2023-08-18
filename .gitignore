@@ -1,1 +1,5 @@
 .venv
+fib.h
+fib.so
+fib.dylib
+fib.dll

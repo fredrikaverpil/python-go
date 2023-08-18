@@ -1,31 +1,39 @@
-# python go extension
-
-- Extending Python with C or C++: https://docs.python.org/3/extending/extending.html
-- Python C API: https://docs.python.org/3/c-api
-- Based on https://github.com/anthonywritescode/explains/tree/master/sample_code/ep338
+# Extend Python with Go
 
 ## Prerequisites
 
-- go 1.17
-- gcc
-- python3-dev, libpython3-dev (not sure about these actually...)
+- go 1.21.0
+- python 3.11
 
 ## Setup
+
+Set up Python virtual environment:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
 ```
 
-## Build and install
+Build:
 
 ```bash
-pip install .
+# linux
+go build -buildmode=c-shared -o fib.so
+
+# macOS
+go build -buildmode=c-shared -o fib.dylib
+
+# windows
+go build -buildmode=c-shared -o fib.dll
 ```
 
-# Run
+## Run
 
 ```bash
-pytest tests.py
+python main.py
 ```
+
+## Docs
+
+- https://docs.python.org/3/library/ctypes.html
+- https://pkg.go.dev/cmd/cgo

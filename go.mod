@@ -1,3 +1,3 @@
-module github.com/fredrikaverpil/python-go-extension
+module github.com/fredrikaverpil/python-go
 
-go 1.17
+go 1.21.0

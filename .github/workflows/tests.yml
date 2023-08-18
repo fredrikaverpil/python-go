@@ -11,49 +11,37 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.9]
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            activate_cmd: source .venv/bin/activate
-            sudo: required
-            services:
-              - docker
-          - os: macOS-latest
-            activate_cmd: source .venv/bin/activate
-          - os: windows-latest
-            activate_cmd: .venv\Scripts\activate.ps1
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-    - name: Check out repository
-      uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ">=1.21.0"
 
-    - name: Create venv
-      run: |
-        python -m venv .venv
-        ${{ matrix.activate_cmd }}
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Set filename based on OS
+        run: |
+          if [ ${{ matrix.os }} == "ubuntu-latest" ]; then
+            echo "FIB_FILENAME=fib.so" >> $GITHUB_ENV
+          elif [ ${{ matrix.os }} == "macos-latest" ]; then
+            echo "FIB_FILENAME=fib.dylib" >> $GITHUB_ENV
+          elif [ ${{ matrix.os }} == "windows-latest" ]; then
+            echo "FIB_FILENAME=fib.dll" >> $GITHUB_ENV
+          fi
+        shell: bash
 
-    - name: Build and install
-      run: |
-        ${{ matrix.activate_cmd }}
-        python setup.py bdist_wheel
-        pip install . --verbose
+      - name: Compile Go code
+        run: go build -buildmode=c-shared -o $FIB_FILENAME
+        shell: bash
 
-    - name: Tests
-      run: |
-        ${{ matrix.activate_cmd }}
-        pytest -v tests.py
-
-    - name: Store wheel
-      uses: actions/upload-artifact@v1
-      with:
-        name: wheels
-        path: dist
+      - name: Run/test
+        run: python main.py
+        shell: bash
